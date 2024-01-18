@@ -46,74 +46,22 @@ class Node {
 class BsTree {
   _root = null;
   constructor(arr) {
-    if (Array.isArray(arr) || arr.length !== 0) {
-      let newArr = this._filterDuplicates(arr);
-      newArr = this._mergeSort(newArr);
-      this._root = this.buildTree(newArr, 0, newArr.length - 1);
+    if (Array.isArray(arr) && arr.length !== 0) {
+      const newArr = [...new Set(arr.sort((a, b) => a - b))];
+      this._root = this.buildTree(newArr);
     }
   }
 
-  _merge(arr1, arr2, arr) {
-    let l1 = arr1.length;
-    let l2 = arr2.length;
-    let i = 0;
-    let j = 0;
-    let k = 0;
-    while (i < l1 && j < l2) {
-      if (arr1[i] < arr2[j]) {
-        arr[k] = arr1[i];
-        i++;
-      } else {
-        arr[k] = arr2[j];
-        j++;
-      }
-      k++;
-    }
-    while (i < l1) {
-      arr[k] = arr1[i];
-      i++;
-      k++;
-    }
-    while (j < l2) {
-      arr[k] = arr2[j];
-      j++;
-      k++;
-    }
-    return arr;
-  }
-  _mergeSort(arr) {
-    const n = arr.length;
-    if (n < 2) return arr;
-    let mid = Math.floor(n / 2);
-    let i;
-    let leftArr = new Array(mid);
-    let rightArr = new Array(n - mid);
-
-    for (i = 0; i < mid; i++) {
-      leftArr[i] = arr[i];
-    }
-    for (i = mid; i < n; i++) {
-      rightArr[i - mid] = arr[i];
-    }
-    this._mergeSort(leftArr);
-    this._mergeSort(rightArr);
-    return this._merge(leftArr, rightArr, arr);
-  }
-
-  _filterDuplicates(arr) {
-    let set = new Set(arr);
-    arr = [...set.values()];
-    return arr;
-  }
-
-  buildTree(arr, start, end) {
+  buildTree(arr) {
+    let start = 0;
+    let end = arr.length - 1;
     if (start > end) {
       return null;
     }
     let mid = Math.round((start + end) / 2);
     let root = new Node(arr[mid]);
-    root.left = this.buildTree(arr, start, mid - 1);
-    root.right = this.buildTree(arr, mid + 1, end);
+    root.left = this.buildTree(arr.slice(0, mid));
+    root.right = this.buildTree(arr.slice(mid + 1));
     return root;
   }
 
@@ -373,9 +321,8 @@ class BsTree {
   }
 
   reBalance() {
-    let newArr = this._filterDuplicates(this.inOrder());
-    newArr = this._mergeSort(newArr);
-    this._root = this.buildTree(newArr, 0, newArr.length - 1);
+    const newArr = [...new Set(this.inOrder())];
+    this._root = this.buildTree(newArr);
   }
 }
 
@@ -397,12 +344,12 @@ function randomArray(n) {
       count++;
     }
   }
-  return set.keys();
+  return [...set.keys()];
 }
 
 // driver script
 (function main() {
-  let randomArr = randomArray(20);
+  const randomArr = randomArray(20);
   let tree = new BsTree(randomArr);
 
   console.log("Print tree: ");
